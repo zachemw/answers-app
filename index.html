@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Book of Answers</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #ff5533;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: Helvetica, Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #eye-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 40px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #eye-wrap {
+      position: relative;
+      width: 200px;
+    }
+
+    #eye-wrap img {
+      width: 200px;
+      height: auto;
+      display: block;
+    }
+
+    #eye-b {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
+
+    #answer {
+      font-size: clamp(18px, 4vw, 26px);
+      font-weight: bold;
+      color: #1a1a1a;
+      letter-spacing: 0.08em;
+      text-align: center;
+      max-width: 480px;
+      padding: 0 24px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 32px;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.35);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="eye-btn" aria-label="Ask the Book of Answers">
+    <div id="eye-wrap">
+      <img id="eye-a" src="OpenEye-01.png" alt="Eye" />
+      <img id="eye-b" src="OpenEye-01.png" alt="" aria-hidden="true" />
+    </div>
+  </button>
+
+  <div id="answer" role="status" aria-live="polite"></div>
+
+  <p id="hint">tap to ask</p>
+
+  <script>
+    const ANSWERS = ["ADOPT AN ADVENTUROUS ATTITUDE","FOLLOW THE ADVICE OF EXPERTS","YOU COULD FIND YOURSELF UNABLE TO COMPROMISE","FOCUS ON YOUR HOME LIFE","INVESTIGATE AND THEN ENJOY IT","DEFINITELY","ONLY DO IT ONCE","YOU MAY HAVE OPPOSITION","IT WILL REMAIN UNPREDICTABLE","YOU\u2019LL NEED TO TAKE THE INITIATIVE","CONSIDER IT AN OPPORTUNITY","BE DELIBERATE","ABSOLUTELY NOT","EXPLORE IT WITH PLAYFUL CURIOSITY","PERHAPS, WHEN YOU\u2019RE OLDER","BE DELIGHTFULLY SURE OF IT","BETTER TO WAIT","REPRIORITIZE WHAT IS IMPORTANT","IT SEEMS ASSURED","CREATE MORE SPACE FOR IT","DO IT EARLY","KEEP IT TO YOURSELF","ALLOW YOURSELF TO REST FIRST","IT IS SENSIBLE","YOU\u2019LL HAVE TO MAKE IT UP AS YOU GO","STARTLING EVENTS MAY OCCUR AS A RESULT","THE ANSWER MAY COME TO YOU IN ANOTHER LANGUAGE","YOU WILL NEED TO ACCOMMODATE","DOUBT IT","IT WILL BRING GOOD LUCK","IT MAY BE CHALLENGING, BUT YOU WILL FIND VALUE IN IT","BE PATIENT","YOU WILL FIND OUT EVERYTHING YOU\u2019LL NEED TO KNOW","THERE IS A SUBSTANTIAL LINK TO ANOTHER SITUATION","WATCH AND SEE WHAT HAPPENS","YOU KNOW BETTER NOW THAN EVER BEFORE","IT WILL AFFECT HOW OTHERS SEE YOU","RECONSIDER YOUR APPROACH","YOU\u2019LL BE HAPPY YOU DID","GET IT IN WRITING","UNFAVORABLE AT THIS TIME","IT IS NOT SOMETHING TO BE TAKEN LIGHTLY","UPGRADE IN ANY WAY YOU CAN","IF YOU DO AS YOU\u2019RE TOLD","IF IT\u2019S DONE WELL; IF NOT, DON\u2019T DO IT AT ALL","DON\u2019T ASK FOR ANY MORE AT THIS TIME","AVOID THE FIRST SOLUTION","YOU\u2019LL GET THE FINAL WORD","PROCEED AT A MORE RELAXED PACE","THE BEST SOLUTION MAY NOT BE THE OBVIOUS ONE","REMAIN FLEXIBLE","RESPECT THE RULES","TAKE THE LEAD","CHOOSE YOUR WORDS THOUGHTFULLY","YOU MAY BE HANGING ON TO AN OUTDATED IDEAL","THERE MAY BE A STRUGGLE","YOU\u2019LL HAVE THE ENTHUSIASM YOU\u2019LL NEED","PROVIDED YOU SAY \u201cTHANK YOU\u201d","ENJOY THE EXPERIENCE","APPROACH CAUTIOUSLY","BE YOUR OWN BEST ADVOCATE","BE HAPPY FOR ANOTHER","PAY ATTENTION TO THE DETAILS","WATCH YOUR STEP AS YOU GO","SPEAK UP ABOUT IT","DON\u2019T HESITATE","THIS IS A GOOD TIME TO MAKE A NEW PLAN","MOVE ON","A STRONG COMMITMENT WILL ACHIEVE GOOD RESULTS","IT MAY NOT BE LOGICAL","THERE IS NO GUARANTEE","THE CIRCUMSTANCES COULD CHANGE VERY QUICKLY","DON\u2019T GET CAUGHT UP IN YOUR EMOTIONS","SHIFT YOUR FOCUS","IT IS SIGNIFICANT","REPRIORITIZE WHAT IS IMPORTANT","MAKE A LIST OF WHY NOT","DON\u2019T WAIT","TAKE YOUR TIME","THERE IS GOOD REASON TO BE OPTIMISTIC","IT IS SOMETHING YOU WON\u2019T FORGET","SEEK OUT MORE OPTIONS","FOLLOW THROUGH ON YOUR OBLIGATIONS","DEAL WITH IT LATER","REVEAL YOUR THOUGHTS TO A TRUSTED CONFIDANTE","FOLLOW SOMEONE ELSE\u2019S LEAD","YOU COULD FIND YOURSELF UNABLE TO COMPROMISE","MAKE A LIST OF WHY","TAKE A CHANCE","YOUR ACTIONS WILL IMPROVE THINGS","ASK FOR HELP","KNOW WHEN IT\u2019S TIME TO GO","ACCEPT A CHANGE TO YOUR ROUTINE","YOU\u2019LL NEED TO TAKE THE INITIATIVE","YOU\u2019LL HAVE TO COMPROMISE","YOU NEED MORE INFORMATION","TRUST YOUR ORIGINAL THOUGHT","SEEK OUT THE PATH OF LEAST RESISTANCE","IT WILL CREATE A STIR","YOU\u2019LL OVERCOME ANY OBSTACLES","IT WOULD BE BETTER TO FOCUS ON YOUR WORK","IT WILL BE A PLEASURE","BE MORE GENEROUS","BET ON IT","GOOD THINGS ARE SEEKING YOU OUT","DON\u2019T LEAVE ROOM FOR REGRET","MAKE A CONTRIBUTION","MISHAPS ARE HIGHLY PROBABLE","PRESS FOR CLOSURE","REALIZE THAT TOO MANY CHOICES CAN BE AS DIFFICULT AS TOO FEW","YES","LISTEN CAREFULLY; THEN YOU WILL KNOW","THE ANSWER IS IN YOUR BACKYARD","LAUGH ABOUT IT","LET YOUR EMOTIONS GUIDE YOU","OTHERS WILL DEPEND ON YOUR CHOICES","LET IT GO","IT\u2019S TIME FOR YOU TO GO","DON\u2019T BE DISTRACTED","GIVE IT ALL YOU\u2019VE GOT","YOU DON\u2019T REALLY CARE","YOU\u2019LL NEED TO CONSIDER OTHER WAYS","A YEAR FROM NOW IT WON\u2019T MATTER","FOLLOW THE ADVICE OF EXPERTS","IT COULD BE EXTRAORDINARY","COUNT TO TEN; ASK AGAIN","ACT AS THOUGH IT IS ALREADY REAL","SETTING PRIORITIES WILL BE A NECESSARY PART OF THE PROCESS","USE YOUR IMAGINATION","IT\u2019S GONNA BE GREAT","TO ENSURE THE BEST DECISION, BE CALM","WAIT","YOU\u2019LL HAVE TO MAKE IT UP AS YOU GO","FOLLOW THE DIRECTIONS","UNQUESTIONABLY","OF COURSE","LOOK FOR WHAT MAY BE HIDDEN","YOU KNOW BETTER NOW THAN EVER BEFORE","TRUST YOUR INTUITION","DON\u2019T MISS AN OPPORTUNITY","ASK YOUR FATHER","ASK YOUR MOTHER","PERHAPS, WHEN YOU\u2019RE OLDER","MAYBE","FINISH SOMETHING ELSE FIRST","YOU MAY HAVE OPPOSITION","YOU ARE TOO CLOSE TO SEE","THE SITUATION IS UNCLEAR","A SUBSTANTIAL EFFORT WILL BE REQUIRED","ALLOW YOURSELF TO REST FIRST","THE CHANCE WILL NOT COME AGAIN SOON","THE ANSWER MAY COME TO YOU IN ANOTHER LANGUAGE","RECONSIDER YOUR APPROACH","IT WOULD BE INADVISABLE","THERE IS A SMALL PRICE TO PAY","WAIT FOR A BETTER OFFER","SETTLE IT SOON","REMAIN OBJECTIVE","YES, BUT DON\u2019T FORCE IT","GET A CLEARER VIEW","BE DELIGHTFULLY SURE OF IT","NOW YOU CAN","PROVIDED YOU SAY \u201cTHANK YOU\u201d","DON\u2019T OVERDO IT","IT WILL SUSTAIN YOU","IT COULD COST YOU","ADOPT AN ADVENTUROUS ATTITUDE","IT IS SURE TO MAKE THINGS INTERESTING","BE PRACTICAL","ARE YOU READY?","SAVE YOUR ENERGY","PAY ATTENTION TO THE DETAILS","IT IS CERTAIN","IT IS UNCERTAIN","THE OUTCOME WILL BE POSITIVE","YOU MAY HAVE TO DROP OTHER THINGS","DON\u2019T BE CONCERNED","PREPARE FOR THE UNEXPECTED","TELL SOMEONE WHAT IT MEANS TO YOU","WHATEVER YOU DO, THE RESULTS WILL BE LASTING","KEEP AN OPEN MIND","IT\u2019S A GOOD TIME TO MAKE PLANS","IT MAY BE AMBITIOUS, BUT YOU WILL FIND VALUE IN IT","IT IS WORTH THE TROUBLE","YOU\u2019LL OVERCOME ANY OBSTACLES","RELATED ISSUES MAY SURFACE","YOU ARE SURE TO HAVE SUPPORT","ASSISTANCE WOULD MAKE YOUR PROGRESS A SUCCESS","COLLABORATION WILL BE THE KEY","SEEK OUT MORE OPTIONS","TAKE CHARGE","IT CANNOT FAIL","YOU MUST ACT NOW","RESPECT THE RULES","GENTLE PERSISTENCE WILL PAY OFF","YOU COULD BE DISAPPOINTED","IT MAY ALREADY BE A DONE DEAL","FOLLOW THROUGH WITH YOUR GOOD INTENTIONS","TAKE MORE TIME TO DECIDE","FOLLOW THROUGH ON YOUR OBLIGATIONS","DON\u2019T BE PRESSURED INTO ACTING TOO QUICKLY","DON\u2019T IGNORE THE OBVIOUS","OTHERS WILL RESPECT YOUR CHOICES","DON\u2019T BE TOO PRACTICAL","BE A GOOD ROLE MODEL","IT\u2019S NOT WORTH A STRUGGLE","LISTEN CAREFULLY; THEN YOU WILL KNOW","DON\u2019T FORGET TO HAVE FUN","DON\u2019T DOUBT IT","A STRONG COMMITMENT WILL ACHIEVE GOOD RESULTS","TRY A MORE UNLIKELY SOLUTION","LEAVE BEHIND OLD SOLUTIONS","KEEP IT TO YOURSELF","WATCH YOUR STEP AS YOU GO","EXPLORE IT WITH PLAYFUL CURIOSITY","DON\u2019T BE TOO DEMANDING","DON\u2019T LEAVE ROOM FOR REGRET","ACT AS THOUGH IT IS ALREADY REAL","IT ISN\u2019T PERSONAL","BE PERSISTENT","CHOOSE WHAT WILL MAKE YOU HAPPY","DON\u2019T LET MONEY DECIDE IT","IT WILL WORK ITSELF OUT","IF IT\u2019S TOO DIFFICULT, MAYBE IT\u2019S NOT YOURS","IT COULD MEAN THAT YOU MAY HAVE TO DO SOMETHING THAT YOU\u2019VE NEVER DONE","DECIDE WHERE YOU WANT TO BE AND HEAD IN THAT DIRECTION","CAST YOUR NET WIDER","MAKE NO ASSUMPTIONS","RESPECT THE FUNDAMENTALS","BE RESOURCEFUL","FIND MORE TIME","NOTHING WILL COMPARE","IT WILL BE AN OPPORTUNITY","DON\u2019T GIVE UP YOUR RIGHT TO WAIT","BE DELIBERATE","WHY IS IT IMPORTANT TO YOU?","DON\u2019T LET THE MOMENT PASS","YOU\u2019LL GET WHAT YOU SETTLE FOR","CHOOSE WHATEVER WILL HELP YOU TO GROW","BE KIND","REALIZE THAT TOO MANY CHOICES CAN BE AS DIFFICULT AS TOO FEW","TAKE A CHANCE","YOU WILL HAVE EVERYTHING NECESSARY FOR YOUR SUCCESS","OTHERS MAY NOT APPROVE","YOU\u2019LL HAVE THE STRENGTH YOU\u2019LL NEED","INITIATE AN ADVENTURE","BE TACTFUL","YOU\u2019LL NEED TO CONSIDER OTHER WAYS","FIGURE OUT A WAY","IT COULD BE A MATTER OF PRIDE","PURSUE MORE VARIETY","DON\u2019T GET CAUGHT UP IN YOUR EMOTIONS","PITCH IN WHATEVER YOU CAN","ARRIVE EARLY","NO MATTER WHAT","YOU ARE TOO CLOSE TO SEE","YES","DON\u2019T TAKE A CHANCE","IT IS NOT SOMETHING TO BE TAKEN LIGHTLY","BE CONTENT TO LEAVE WELL ENOUGH ALONE","TOO MUCH ATTENTION IS ON THE DETAILS","KEEP IT LIGHT","GET MORE SLEEP","RECONSIDER ANOTHER POSSIBILITY","IT MAY NOT BE LOGICAL","THE ANSWER IS IN YOUR BACKYARD","MAKE A CONTRIBUTION","USE YOUR IMAGINATION","KNOW NO LIMITATIONS","BUILD SOMETHING BIGGER","AIM HIGHER","TAKE IT IN STRIDE","BE A GOOD SPORT","TAKE THE LEAD","THERE IS A SMALL PRICE TO PAY","DON\u2019T BE TOO CRITICAL","PUT YOUR FEELINGS IN THE RIGHT PLACE","IDENTIFY WHAT MATTERS ABOUT IT","HOW THINGS TURN OUT WILL DEPEND ON YOU","LOOK FOR WHAT MAY BE HIDDEN","LET YOUR EMOTIONS GUIDE YOU","REVEAL YOUR THOUGHTS TO A TRUSTED CONFIDANTE","TAKE A CLOSER LOOK","DON\u2019T BE CONCERNED","YOU CAN DO THIS ON YOUR OWN","ASK FOR HELP","CREATE MORE SPACE FOR IT","DIVERT YOUR ATTENTION","WHAT DO YOU WANT?","DO YOUR BEST TO SET THE STANDARD","THERE IS GOOD REASON TO BE OPTIMISTIC","DON\u2019T BE DISTRACTED","ENJOY A NEW SETTING","YOU WILL NEED TO ACCOMMODATE","REMAIN OBJECTIVE","TELL SOMEONE WHAT IT MEANS TO YOU","CONSIDER IT AN OPPORTUNITY","SEEK OUT THE PATH OF LEAST RESISTANCE","GOOD THINGS ARE SEEKING YOU OUT","IT WON\u2019T MATTER WHEN YOU DO, BUT THAT YOU DO","YOU MAY BE HANGING ON TO AN OUTDATED IDEAL","IT\u2019LL CHANGE YOUR LUCK","DON\u2019T RESIST","FOLLOW THE DIRECTIONS","THE BEST SOLUTION MAY BE THE OBVIOUS ONE","DON\u2019T BE TOO CAUTIOUS","YOU MAY REGRET IT","IS IT IMPORTANT TO YOU?","CHOOSE YOUR WORDS CAREFULLY","LIMIT THE OPTIONS","FOCUS YOUR ATTENTION","SHOULDN\u2019T YOU BE OUTSIDE PLAYING?","WOULD IT BE A PLEASURE?","BE ON TIME","ASK YOUR FATHER","ASK YOUR MOTHER","TAKE YOUR TIME","YES, BUT DON\u2019T FORCE IT","THERE IS MORE TO KNOW","FIND OUT THE FACTS","NOT IF YOU\u2019RE ALONE","UNCOVER MORE DETAILS","YOUR HEART ISN\u2019T IN IT","BE HAPPY FOR ANOTHER","YOU ARE FAVORED","NEVER","A YEAR FROM NOW IT WON\u2019T MATTER","ARE YOU READY?","YOU MUST","NO","CONSERVE YOUR RESOURCES","BE A GOOD ROLE MODEL","NEGOTIATE A BETTER DEAL","FAVOR THE GOOD THINGS","DON\u2019T LET IT BE RUINED BY REASON","SLEEP ON IT","DO YOUR BEST","IT IS NOT SIGNIFICANT","YOU HAVE SO MUCH TO OFFER","KNOW WHAT\u2019S IMPORTANT TO YOU","YOU DESERVE THE BEST","BETTER THINGS ARE SEEKING YOU OUT","IT\u2019S UP TO YOU","CHOOSE WHAT MAKES YOU HAPPY","LET YOUR HEART LEAD THE WAY","DON\u2019T GET CAUGHT UP IN THE DETAILS"];
+
+    const answerDiv = document.getElementById('answer');
+    const hintP    = document.getElementById('hint');
+    const btn      = document.getElementById('eye-btn');
+
+    // Two stacked images — true cross-fade: one fades out while the other fades in
+    let front = document.getElementById('eye-a'); // currently visible
+    let back  = document.getElementById('eye-b'); // hidden, waiting to swap in
+
+    // Preload images
+    ['OpenEye-01.png', 'OpenEye-02.png', 'OpenEye-03.png']
+      .forEach(src => { const i = new Image(); i.src = src; });
+
+    let lastIndex  = -1;
+    let isPressed  = false;
+    let pressTimer = null; // set on press; if release fires before it, it's a tap
+
+    // Hold animation timings (unchanged)
+    const FAST = 1000; // ms — press / cancel
+    const SLOW = 1500; // ms — release eye
+    const TEXT = 2000; // ms — answer text fade-in
+
+    // Tap animation timings (quick 3-step sequence)
+    const TAP_THRESHOLD = 150; // ms — release faster than this = tap
+    const TAP_EYE  = 380;      // ms — each eye crossfade step (01→02, then 02→03)
+    const TAP_TEXT = 650;      // ms — answer text fade-in
+
+    function getRandomAnswer() {
+      let idx;
+      do { idx = Math.floor(Math.random() * ANSWERS.length); }
+      while (idx === lastIndex && ANSWERS.length > 1);
+      lastIndex = idx;
+      return ANSWERS[idx];
+    }
+
+    function fadeEl(el, toOpacity, dur) {
+      el.style.transition = `opacity ${dur}ms ease`;
+      el.style.opacity = String(toOpacity);
+    }
+
+    // True cross-fade: load new src on the back layer, fade both simultaneously.
+    // After the transition, swap front/back references so state stays correct.
+    function crossFade(src, dur) {
+      back.src = src;
+      fadeEl(front, 0, dur);
+      fadeEl(back,  1, dur);
+      setTimeout(() => { [front, back] = [back, front]; }, dur);
+    }
+
+    function onPress() {
+      if (isPressed) return;
+      isPressed = true;
+
+      // Wait for tap threshold before committing to the slow hold animation
+      pressTimer = setTimeout(() => {
+        pressTimer = null;
+        crossFade('OpenEye-02.png', FAST);
+        fadeEl(answerDiv, 0, FAST);
+      }, TAP_THRESHOLD);
+    }
+
+    function onRelease() {
+      if (!isPressed) return;
+      isPressed = false;
+      hintP.style.opacity = '0';
+
+      if (pressTimer !== null) {
+        // Released before threshold — it's a tap: play quick 01→02→03 sequence
+        clearTimeout(pressTimer);
+        pressTimer = null;
+        const answer = getRandomAnswer();
+        fadeEl(answerDiv, 0, TAP_EYE); // fade out any existing answer in sync with 01→02
+        crossFade('OpenEye-02.png', TAP_EYE);
+        setTimeout(() => {
+          crossFade('OpenEye-03.png', TAP_EYE);
+          answerDiv.textContent = answer;
+          fadeEl(answerDiv, 1, TAP_TEXT); // fade in new answer in sync with 02→03
+        }, TAP_EYE);
+      } else {
+        // Hold release — existing slow animation (unchanged)
+        crossFade('OpenEye-03.png', SLOW);
+        answerDiv.textContent = getRandomAnswer();
+        fadeEl(answerDiv, 1, TEXT);
+      }
+    }
+
+    function onCancel() {
+      if (!isPressed) return;
+      isPressed = false;
+      if (pressTimer !== null) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+        // Hold animation never started, nothing to reverse
+      } else {
+        crossFade('OpenEye-01.png', FAST);
+      }
+    }
+
+    // Mouse
+    btn.addEventListener('mousedown', onPress);
+    window.addEventListener('mouseup', e => {
+      if (isPressed) {
+        // Only count as release if pointer is still over the button
+        if (btn.matches(':hover')) { onRelease(); } else { onCancel(); }
+      }
+    });
+
+    // Touch
+    btn.addEventListener('touchstart', e => { e.preventDefault(); onPress(); }, { passive: false });
+    btn.addEventListener('touchend',   e => { e.preventDefault(); onRelease(); }, { passive: false });
+    btn.addEventListener('touchcancel',e => { e.preventDefault(); onCancel(); },  { passive: false });
+
+    // Keyboard support (spacebar / enter)
+    document.addEventListener('keydown', e => {
+      if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); onPress(); }
+    });
+    document.addEventListener('keyup', e => {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onRelease(); }
+    });
+  </script>
+</body>
+</html>
